@@ -14,6 +14,7 @@ import React, {
   useCallback,
   useState,
 } from 'react';
+import {Platform} from 'react-native';
 
 import {SafeAreaView, View, Button, ViewProps, StatusBar} from 'react-native';
 
@@ -24,6 +25,12 @@ import {ArcRotateCamera} from '@babylonjs/core/Cameras/arcRotateCamera';
 import '@babylonjs/loaders/glTF';
 import {Scene} from '@babylonjs/core/scene';
 import {WebXRSessionManager, WebXRTrackingState} from '@babylonjs/core/XR';
+const isAndroid = Platform.OS === 'android';
+const assetPrefix = isAndroid ? 'custom/' : '';
+
+function resolveAssetUri(path: string) {
+  return `app:///${assetPrefix}${path}`;
+}
 
 const EngineScreen: FunctionComponent<ViewProps> = (props: ViewProps) => {
   const engine = useEngine();
@@ -68,7 +75,17 @@ const EngineScreen: FunctionComponent<ViewProps> = (props: ViewProps) => {
     if (engine) {
       const url =
         'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoxAnimated/glTF/BoxAnimated.gltf';
-      SceneLoader.LoadAsync(url, undefined, engine).then(loadScene => {
+
+      //  const modelPath=resolveAssetUri("assets/Bruce/Bruce.glb")
+      // const modelPath = resolveAssetUri('assets/women/test.gltf');
+      const modelPath="asset:/assets/Bruce/Bruce.glb"
+
+      console.log('🚀 ~ file: App.tsx:80 ~ useEffect ~ modelPath:', modelPath);
+
+  
+        SceneLoader.LoadAsync(url, undefined, engine).then(loadScene => {
+          console.log("🚀 ~ file: App.tsx:84 ~ SceneLoader.LoadAsync ~ loadScene:", loadScene)
+
         setScene(loadScene);
         loadScene.createDefaultCameraOrLight(true, undefined, true);
         (loadScene.activeCamera as ArcRotateCamera).alpha += Math.PI;

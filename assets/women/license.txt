@@ -1,0 +1,11 @@
+Model Information:
+* title:	Topology & Texturing Practice 2: (ft. JoseDiaz)
+* source:	https://sketchfab.com/3d-models/topology-texturing-practice-2-ft-josediaz-07abd4f3304649638518639ec60732c7
+* author:	noahm1216 (https://sketchfab.com/noahm1216)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Topology & Texturing Practice 2: (ft. JoseDiaz)" (https://sketchfab.com/3d-models/topology-texturing-practice-2-ft-josediaz-07abd4f3304649638518639ec60732c7) by noahm1216 (https://sketchfab.com/noahm1216) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
