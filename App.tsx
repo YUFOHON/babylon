@@ -73,18 +73,16 @@ const EngineScreen: FunctionComponent<ViewProps> = (props: ViewProps) => {
 
   useEffect(() => {
     if (engine) {
-      const url =
-        'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/BoxAnimated/glTF/BoxAnimated.gltf';
+      //https://raw.githubusercontent.com/YUFOHON/babylon/main/assets/Bruce/Bruce.glb
 
+        // const bruce='https://raw.githubusercontent.com/YUFOHON/babylon/main/assets/Bruce/Bruce.glb'
       //  const modelPath=resolveAssetUri("assets/Bruce/Bruce.glb")
       // const modelPath = resolveAssetUri('assets/women/test.gltf');
-      const modelPath="asset:/assets/Bruce/Bruce.glb"
-
-      console.log('🚀 ~ file: App.tsx:80 ~ useEffect ~ modelPath:', modelPath);
+      const girl='https://raw.githubusercontent.com/YUFOHON/babylon/main/assets/girl/girl_idle.glb'
 
   
-        SceneLoader.LoadAsync(url, undefined, engine).then(loadScene => {
-          console.log("🚀 ~ file: App.tsx:84 ~ SceneLoader.LoadAsync ~ loadScene:", loadScene)
+        SceneLoader.LoadAsync(girl, undefined, engine).then(loadScene => {
+          console.log("🚀 ~ file: App.tsx:84 ~ SceneLoader.LoadAsync ~ loadScene:", loadScene.animations)
 
         setScene(loadScene);
         loadScene.createDefaultCameraOrLight(true, undefined, true);
