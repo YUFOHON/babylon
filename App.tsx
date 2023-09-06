@@ -78,7 +78,7 @@ const EngineScreen: FunctionComponent<ViewProps> = (props: ViewProps) => {
         // const bruce='https://raw.githubusercontent.com/YUFOHON/babylon/main/assets/Bruce/Bruce.glb'
       //  const modelPath=resolveAssetUri("assets/Bruce/Bruce.glb")
       // const modelPath = resolveAssetUri('assets/women/test.gltf');
-      const girl='https://raw.githubusercontent.com/YUFOHON/babylon/main/assets/girl/girl_idle.glb'
+      const girl='https://raw.githubusercontent.com/YUFOHON/babylon/main/assets/girl/girl_laugh_idle_angry_clapping.glb'
 
   
         SceneLoader.LoadAsync(girl, undefined, engine).then(loadScene => {
