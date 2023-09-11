@@ -25,6 +25,8 @@ import {ArcRotateCamera} from '@babylonjs/core/Cameras/arcRotateCamera';
 import '@babylonjs/loaders/glTF';
 import {Scene} from '@babylonjs/core/scene';
 import {WebXRSessionManager, WebXRTrackingState} from '@babylonjs/core/XR';
+import {ActionManager, ExecuteCodeAction} from '@babylonjs/core';
+
 const isAndroid = Platform.OS === 'android';
 const assetPrefix = isAndroid ? 'custom/' : '';
 
@@ -75,20 +77,66 @@ const EngineScreen: FunctionComponent<ViewProps> = (props: ViewProps) => {
     if (engine) {
       //https://raw.githubusercontent.com/YUFOHON/babylon/main/assets/Bruce/Bruce.glb
 
-        // const bruce='https://raw.githubusercontent.com/YUFOHON/babylon/main/assets/Bruce/Bruce.glb'
+      // const bruce='https://raw.githubusercontent.com/YUFOHON/babylon/main/assets/Bruce/Bruce.glb'
       //  const modelPath=resolveAssetUri("assets/Bruce/Bruce.glb")
       // const modelPath = resolveAssetUri('assets/women/test.gltf');
-      const girl='https://raw.githubusercontent.com/YUFOHON/babylon/main/assets/girl/girl_laugh_idle_angry_clapping.glb'
+      const girl =
+        'https://raw.githubusercontent.com/YUFOHON/babylon/main/assets/girl/girl_laugh_idle_angry_clapping.glb';
 
-  
-        SceneLoader.LoadAsync(girl, undefined, engine).then(loadScene => {
-          console.log("🚀 ~ file: App.tsx:84 ~ SceneLoader.LoadAsync ~ loadScene:", loadScene.animations)
+      SceneLoader.LoadAsync(girl, undefined, engine).then(loadScene => {
+        // console.log(
+        //   '🚀 ~ file: App.tsx:84 ~ SceneLoader.LoadAsync ~ loadScene:',
+        //   loadScene.animatables[0],
+        // );
 
         setScene(loadScene);
         loadScene.createDefaultCameraOrLight(true, undefined, true);
         (loadScene.activeCamera as ArcRotateCamera).alpha += Math.PI;
         (loadScene.activeCamera as ArcRotateCamera).radius = 10;
         setCamera(loadScene.activeCamera!);
+
+        //Get the Samba animation Group
+        const laughAnim = loadScene.getAnimationGroupByName('laugh');
+        const angryAnim = loadScene.getAnimationGroupByName('angry');
+        const clappingAnim = loadScene.getAnimationGroupByName('Clapping');
+        const idleAnim = loadScene.getAnimationGroupByName('idle');
+
+        // console.log("🚀 ~ file: App.tsx:98 ~ SceneLoader.LoadAsync ~ laughAnim:", laughAnim)
+
+        //Play the Samba animation
+        idleAnim.start(true, 1.0, idleAnim.from, idleAnim.to, false);
+
+        loadScene.meshes.forEach(mesh => {
+            mesh.actionManager = new ActionManager();
+
+            mesh.actionManager.registerAction(
+              new ExecuteCodeAction(ActionManager.OnPickTrigger, function () {
+                console.warn('CLICK');
+                laughAnim.start(true, 1.0, laughAnim.from, laughAnim.to, false);
+              }),
+            );
+            mesh.actionManager.registerAction(
+              new ExecuteCodeAction(
+                ActionManager.OnPointerOverTrigger,
+                function () {
+                  // console.warn('HOVER');
+                },
+              ),
+            );
+            mesh.actionManager.registerAction(
+              new ExecuteCodeAction(
+                ActionManager.OnPointerOutTrigger,
+                function () {
+                  // console.warn('HOVER EXIT');
+                },
+              ),
+            );
+          });
+
+          console.log('MODELS LOADED');
+
+
+
       });
     }
   }, [engine]);
