@@ -25,7 +25,12 @@ import {ArcRotateCamera} from '@babylonjs/core/Cameras/arcRotateCamera';
 import '@babylonjs/loaders/glTF';
 import {Scene} from '@babylonjs/core/scene';
 import {WebXRSessionManager, WebXRTrackingState} from '@babylonjs/core/XR';
-import {ActionManager, ExecuteCodeAction} from '@babylonjs/core';
+import {
+  ActionManager,
+  ExecuteCodeAction,
+  Color4,
+  Vector3,
+} from '@babylonjs/core';
 
 const isAndroid = Platform.OS === 'android';
 const assetPrefix = isAndroid ? 'custom/' : '';
@@ -84,15 +89,37 @@ const EngineScreen: FunctionComponent<ViewProps> = (props: ViewProps) => {
         'https://raw.githubusercontent.com/YUFOHON/babylon/main/assets/girl/girl_laugh_idle_angry_clapping.glb';
 
       SceneLoader.LoadAsync(girl, undefined, engine).then(loadScene => {
-        // console.log(
-        //   '🚀 ~ file: App.tsx:84 ~ SceneLoader.LoadAsync ~ loadScene:',
-        //   loadScene.animatables[0],
-        // );
+        // console.log("🚀 ~ file: App.tsx:87 ~ SceneLoader.LoadAsync ~ loadScene:", loadScene.getNodeById("Wolf3D_Head.001")?.uniqueId)
 
+        const morphTarget_mouthOpen = loadScene
+          .getMeshById('Wolf3D_Head.001')!
+          .morphTargetManager?.getTarget(0);
+        const morphTarget_smile = loadScene
+          .getMeshById('Wolf3D_Head.001')!
+          .morphTargetManager?.getTarget(1);
+        morphTarget_mouthOpen!.influence = 1;
+        morphTarget_smile!.influence = 1;
+        // set the backgroudn to white
+        loadScene.clearColor = new Color4(1, 1, 1, 1);
         setScene(loadScene);
+        // Create a custome camera
+        /*         
+        
+        const newCamera = new ArcRotateCamera(
+          'camera',
+          Math.PI / 2,
+          Math.PI / 2,
+          5, // Adjust the camera distance here to set it closer or further away
+          new Vector3(0, 0, 0),
+          loadScene
+        );
+        newCamera.attachControl();
+        setCamera(newCamera); */
+
         loadScene.createDefaultCameraOrLight(true, undefined, true);
         (loadScene.activeCamera as ArcRotateCamera).alpha += Math.PI;
-        (loadScene.activeCamera as ArcRotateCamera).radius = 10;
+        (loadScene.activeCamera as ArcRotateCamera).radius = 5;
+
         setCamera(loadScene.activeCamera!);
 
         //Get the Samba animation Group
@@ -107,36 +134,33 @@ const EngineScreen: FunctionComponent<ViewProps> = (props: ViewProps) => {
         idleAnim.start(true, 1.0, idleAnim.from, idleAnim.to, false);
 
         loadScene.meshes.forEach(mesh => {
-            mesh.actionManager = new ActionManager();
+          mesh.actionManager = new ActionManager();
 
-            mesh.actionManager.registerAction(
-              new ExecuteCodeAction(ActionManager.OnPickTrigger, function () {
-                console.warn('CLICK');
-                laughAnim.start(true, 1.0, laughAnim.from, laughAnim.to, false);
-              }),
-            );
-            mesh.actionManager.registerAction(
-              new ExecuteCodeAction(
-                ActionManager.OnPointerOverTrigger,
-                function () {
-                  // console.warn('HOVER');
-                },
-              ),
-            );
-            mesh.actionManager.registerAction(
-              new ExecuteCodeAction(
-                ActionManager.OnPointerOutTrigger,
-                function () {
-                  // console.warn('HOVER EXIT');
-                },
-              ),
-            );
-          });
+          mesh.actionManager.registerAction(
+            new ExecuteCodeAction(ActionManager.OnPickTrigger, function () {
+              console.warn('CLICK');
+              laughAnim.start(true, 1.0, laughAnim.from, laughAnim.to, false);
+            }),
+          );
+          mesh.actionManager.registerAction(
+            new ExecuteCodeAction(
+              ActionManager.OnPointerOverTrigger,
+              function () {
+                // console.warn('HOVER');
+              },
+            ),
+          );
+          mesh.actionManager.registerAction(
+            new ExecuteCodeAction(
+              ActionManager.OnPointerOutTrigger,
+              function () {
+                // console.warn('HOVER EXIT');
+              },
+            ),
+          );
+        });
 
-          console.log('MODELS LOADED');
-
-
-
+        console.log('MODELS LOADED');
       });
     }
   }, [engine]);
