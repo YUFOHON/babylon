@@ -4,6 +4,7 @@ import { View, Text } from 'react-native';
 const CurrentDate: React.FC = () => {
   const [time, setTime] = useState(new Date());
   const [date, setDate] = useState(new Date().getDate());
+
   const getStringDay = (day: number) => {
     switch (day) {
       case 0:
@@ -23,7 +24,6 @@ const CurrentDate: React.FC = () => {
     }
   };
   const [day, setDay] = useState(getStringDay(time.getDay()));
-
   const getStringMonth = (month: number) => {
     switch (month) {
       case 0:
@@ -55,6 +55,7 @@ const CurrentDate: React.FC = () => {
   const [month, setMonth] = useState(getStringMonth(time.getMonth()));
 
   useEffect(() => {
+
     const timer = setInterval(() => {
       const newTime = new Date();
       setTime(newTime);
