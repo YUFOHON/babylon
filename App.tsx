@@ -11,9 +11,11 @@
 
 import React from 'react';
 import Model from './components/model/Model';
+import CurrentDate from './components/model/CurrentDate';
 const App = () => {
   return (
     <>
+      <CurrentDate/>
       <Model style={{flex: 1}} />
 
     </>
