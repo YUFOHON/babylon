@@ -9,11 +9,13 @@
  */
 
 import React from 'react';
-import CurrentDate from './components/model/CurrentDate';
+import CurrentDate from './components/CurrentDate';
 import { Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import HomeScreen from './components/model/HomeScreen';
+import HomeScreen from './components/HomeScreen';
+import VoiceInput from './components/VoiceInput';
+
 const Tab = createBottomTabNavigator();
 
 function MyTabs() {
@@ -50,7 +52,6 @@ function MyTabs() {
     </Tab.Navigator>
   );
 }
-import VoiceInput from './components/VoiceInput';
 
 const App = () => {
   return (
