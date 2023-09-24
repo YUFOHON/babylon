@@ -9,14 +9,56 @@
  */
 
 import React from 'react';
-// import Model from './components/model/Model';
+import CurrentDate from './components/model/CurrentDate';
+import { Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import HomeScreen from './components/model/HomeScreen';
+const Tab = createBottomTabNavigator();
+
+function MyTabs() {
+  return (
+    <Tab.Navigator
+      initialRouteName="Feed"
+     
+      screenOptions={{ headerShown: false }}
+    >
+      <Tab.Screen
+        name="Hello"
+        component={HomeScreen}
+        options={{
+          tabBarLabel: 'Home',
+       
+        }}
+      />
+      <Tab.Screen
+        name="CurrentDate"
+        component={CurrentDate}
+        options={{
+          tabBarLabel: 'Training',
+         
+        }}
+      />
+      <Tab.Screen
+        name="Settings"
+        component={CurrentDate}
+        options={{
+          tabBarLabel: 'Settings',
+          
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
 import VoiceInput from './components/VoiceInput';
 
 const App = () => {
   return (
     <>
-      {/* <Model style={{flex: 1}} /> */}
-      <VoiceInput />
+    
+    <NavigationContainer>
+      <MyTabs />
+    </NavigationContainer>
     </>
   );
 };
