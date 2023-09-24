@@ -1,7 +1,7 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import  Model  from './Model';
+import  Model  from '../components/model/Model';
 
 
 
