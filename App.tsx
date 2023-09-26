@@ -19,6 +19,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import HomeScreen from './screens/HomeScreen';
 import { TailwindProvider } from 'tailwindcss-react-native';
 import Login from './screens/LoginScreen';
+import Setting from './screens/SettingScreen';
 const Tab = createBottomTabNavigator();
 
 function MyTabs() {
@@ -51,7 +52,7 @@ function MyTabs() {
       />
       <Tab.Screen
         name="Settings"
-        component={CurrentDate}
+        component={Setting}
         options={{
           tabBarLabel: 'Settings',
           tabBarIcon:({color,size})=>(
