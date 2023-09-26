@@ -59,18 +59,20 @@ const EngineScreen: FunctionComponent<ViewProps> = (props: ViewProps) => {
         engine.loadingScreen = loadingScreen;
         engine.displayLoadingUI();
         const girl =
-          'https://raw.githubusercontent.com/YUFOHON/babylon/main/assets/girl/girl_laugh_idle_angry_clapping.glb';
+          // 'https://raw.githubusercontent.com/YUFOHON/babylon/main/assets/girl/girl_laugh_idle_angry_clapping.glb';
+          'https://raw.githubusercontent.com/YUFOHON/babylon/main/assets/girl/realGirl.glb';
+
 
         SceneLoader.LoadAsync(girl, undefined, engine).then(loadScene => {
           engine.hideLoadingUI();
-          const morphTarget_mouthOpen = loadScene
-            .getMeshById('Wolf3D_Head.001')!
-            .morphTargetManager?.getTarget(0);
-          const morphTarget_smile = loadScene
-            .getMeshById('Wolf3D_Head.001')!
-            .morphTargetManager?.getTarget(1);
-          morphTarget_mouthOpen!.influence = 1;
-          morphTarget_smile!.influence = 1;
+          // const morphTarget_mouthOpen = loadScene
+          //   .getMeshById('Wolf3D_Head.001')!
+          //   .morphTargetManager?.getTarget(0);
+          // const morphTarget_smile = loadScene
+          //   .getMeshById('Wolf3D_Head.001')!
+          //   .morphTargetManager?.getTarget(1);
+          // morphTarget_mouthOpen!.influence = 1;
+          // morphTarget_smile!.influence = 1;
           loadScene.clearColor = new Color4(1, 1, 1, 1);
           setScene(loadScene);
           loadScene.createDefaultCameraOrLight(true, undefined, true);
@@ -78,37 +80,37 @@ const EngineScreen: FunctionComponent<ViewProps> = (props: ViewProps) => {
           (loadScene.activeCamera as ArcRotateCamera).radius = 5;
           setCamera(loadScene.activeCamera!);
 
-          const laughAnim = loadScene.getAnimationGroupByName('laugh')!;
-          const angryAnim = loadScene.getAnimationGroupByName('angry')!;
-          const clappingAnim = loadScene.getAnimationGroupByName('Clapping')!;
-          const idleAnim = loadScene.getAnimationGroupByName('idle')!;
+          // const laughAnim = loadScene.getAnimationGroupByName('laugh')!;
+          // const angryAnim = loadScene.getAnimationGroupByName('angry')!;
+          // const clappingAnim = loadScene.getAnimationGroupByName('Clapping')!;
+          // const idleAnim = loadScene.getAnimationGroupByName('idle')!;
 
-          loadScene.meshes.forEach(mesh => {
-            mesh.actionManager = new ActionManager();
+          // loadScene.meshes.forEach(mesh => {
+          //   mesh.actionManager = new ActionManager();
 
-            mesh.actionManager.registerAction(
-              new ExecuteCodeAction(ActionManager.OnPickTrigger, function () {
-                console.warn('CLICK');
-                laughAnim.start(true, 1.0, laughAnim.from, laughAnim.to, false);
-              }),
-            );
-            mesh.actionManager.registerAction(
-              new ExecuteCodeAction(
-                ActionManager.OnPointerOverTrigger,
-                function () {
-                  // console.warn('HOVER');
-                },
-              ),
-            );
-            mesh.actionManager.registerAction(
-              new ExecuteCodeAction(
-                ActionManager.OnPointerOutTrigger,
-                function () {
-                  // console.warn('HOVER EXIT');
-                },
-              ),
-            );
-          });
+          //   mesh.actionManager.registerAction(
+          //     new ExecuteCodeAction(ActionManager.OnPickTrigger, function () {
+          //       console.warn('CLICK');
+          //       laughAnim.start(true, 1.0, laughAnim.from, laughAnim.to, false);
+          //     }),
+          //   );
+          //   mesh.actionManager.registerAction(
+          //     new ExecuteCodeAction(
+          //       ActionManager.OnPointerOverTrigger,
+          //       function () {
+          //         // console.warn('HOVER');
+          //       },
+          //     ),
+          //   );
+          //   mesh.actionManager.registerAction(
+          //     new ExecuteCodeAction(
+          //       ActionManager.OnPointerOutTrigger,
+          //       function () {
+          //         // console.warn('HOVER EXIT');
+          //       },
+          //     ),
+          //   );
+          // });
 
           console.log('MODELS LOADED');
         });
