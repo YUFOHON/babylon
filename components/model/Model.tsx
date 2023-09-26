@@ -23,6 +23,27 @@ function resolveAssetUri(path: string) {
   return `app:///${assetPrefix}${path}`;
 }
 
+interface ILoadingScreen {
+  //What happens when loading starts
+  displayLoadingUI: () => void;
+  //What happens when loading stops
+  hideLoadingUI: () => void;
+  //default loader support. Optional!
+  loadingUIBackgroundColor: string;
+  loadingUIText: string;
+}
+class CustomLoadingScreen implements ILoadingScreen {
+  //optional, but needed due to interface definitions
+  public loadingUIBackgroundColor: string = 'white';
+  constructor(public loadingUIText: string) {}
+  public displayLoadingUI() {
+    console.warn(this.loadingUIText);
+  }
+
+  public hideLoadingUI() {
+    console.warn("Loaded!");
+  }
+}
 const EngineScreen: FunctionComponent<ViewProps> = (props: ViewProps) => {
   // const engine =new ReactNativeEngine()
   const engine =  useEngine();
@@ -31,15 +52,17 @@ const EngineScreen: FunctionComponent<ViewProps> = (props: ViewProps) => {
   const [scene, setScene] = useState<Scene>();
 
   useEffect(() => {
-
-
       console.log('enter model component');
       if (engine) {
         // console.log('🚀 ~ file: model.tsx:27 ~ useEffect ~ engine:', engine);
+        var loadingScreen = new CustomLoadingScreen("I'm loading!!");
+        engine.loadingScreen = loadingScreen;
+        engine.displayLoadingUI();
         const girl =
           'https://raw.githubusercontent.com/YUFOHON/babylon/main/assets/girl/girl_laugh_idle_angry_clapping.glb';
 
         SceneLoader.LoadAsync(girl, undefined, engine).then(loadScene => {
+          engine.hideLoadingUI();
           const morphTarget_mouthOpen = loadScene
             .getMeshById('Wolf3D_Head.001')!
             .morphTargetManager?.getTarget(0);
