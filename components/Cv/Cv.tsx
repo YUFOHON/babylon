@@ -13,6 +13,8 @@ import {
 import Svg, {Circle} from 'react-native-svg';
 import {ExpoWebGLRenderingContext} from 'expo-gl';
 import {CameraType} from 'expo-camera/build/Camera.types';
+import useOrientation from './useOrientation';
+
 const TensorCamera = cameraWithTensors(Camera);
 // Whether to auto-render TensorCamera preview.
 const AUTO_RENDER = false;
@@ -38,9 +40,29 @@ export default function Cv() {
     Camera.Constants.Type.front,
   );
   const [fps, setFps] = useState(0);
+  const orientation = useOrientation();
+  console.log('🚀 ~ file: Cv.tsx:44 ~ Cv ~ orientation:', orientation);
+
   const LOAD_MODEL_FROM_BUNDLE = true;
 
   const rafId = useRef<number | null>(null);
+
+  const getOutputTensorWidth = () => {
+    // On iOS landscape mode, switch width and height of the output tensor to
+    // get better result. Without this, the image stored in the output tensor
+    // would be stretched too much.
+    //
+    // Same for getOutputTensorHeight below.
+    return orientation.isPortrait || IS_ANDROID
+      ? OUTPUT_TENSOR_WIDTH
+      : OUTPUT_TENSOR_HEIGHT;
+  };
+
+  const getOutputTensorHeight = () => {
+    return orientation.isPortrait || IS_ANDROID
+      ? OUTPUT_TENSOR_HEIGHT
+      : OUTPUT_TENSOR_WIDTH;
+  };
 
   useEffect(() => {
     async function prepare() {
@@ -133,10 +155,10 @@ export default function Cv() {
           const y = k.y;
           const cx =
             (x / getOutputTensorWidth()) *
-            (isPortrait() ? CAM_PREVIEW_WIDTH : CAM_PREVIEW_HEIGHT);
+            (orientation.isPortrait ? CAM_PREVIEW_WIDTH : CAM_PREVIEW_HEIGHT);
           const cy =
             (y / getOutputTensorHeight()) *
-            (isPortrait() ? CAM_PREVIEW_HEIGHT : CAM_PREVIEW_WIDTH);
+            (orientation.isPortrait ? CAM_PREVIEW_HEIGHT : CAM_PREVIEW_WIDTH);
           return (
             <Circle
               key={`skeletonkp_${k.name}`}
@@ -156,6 +178,50 @@ export default function Cv() {
     }
   };
 
+  const renderFps = () => {
+    return (
+      <View style={styles.fpsContainer}>
+        <Text>FPS: {fps}</Text>
+      </View>
+    );
+  };
+  const renderCameraTypeSwitcher = () => {
+    return (
+      <View
+        style={styles.cameraTypeSwitcher}
+        onTouchEnd={handleSwitchCameraType}
+      >
+        <Text>
+          Switch to{' '}
+          {cameraType === Camera.Constants.Type.front ? 'back' : 'front'} camera
+        </Text>
+      </View>
+    );
+  };
+
+  const handleSwitchCameraType = () => {
+    if (cameraType === Camera.Constants.Type.front) {
+      setCameraType(Camera.Constants.Type.back);
+    } else {
+      setCameraType(Camera.Constants.Type.front);
+    }
+  };
+
+
+
+  const getTextureRotationAngleInDegrees = () => {
+    // On Android, the camera texture will rotate behind the scene as the phone
+    // changes orientation, so we don't need to rotate it in TensorCamera.
+    if (IS_ANDROID) {
+      return 0;
+    }
+
+ 
+  };
+
+
+
+
   if (!tfReady) {
     return (
       <View style={styles.loadingMsg}>
@@ -164,14 +230,44 @@ export default function Cv() {
     );
   } else {
     return (
-      <View>
-        <Text>ready ...</Text>
+      <View
+      style={
+        orientation.isPortrait? styles.containerPortrait : styles.containerLandscape
+      }
+      >
+             <TensorCamera
+            ref={cameraRef}
+            style={styles.camera}
+            autorender={AUTO_RENDER}
+            type={cameraType}
+            // tensor related props
+            resizeWidth={getOutputTensorWidth()}
+            resizeHeight={getOutputTensorHeight()}
+            resizeDepth={3}
+            rotation={getTextureRotationAngleInDegrees()}
+            onReady={handleCameraStream}
+          />
+           {renderPose()}
+           {renderFps()}
+          {renderCameraTypeSwitcher()}
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
+  containerPortrait: {
+    position: 'relative',
+    width: CAM_PREVIEW_WIDTH,
+    height: CAM_PREVIEW_HEIGHT,
+    marginTop: Dimensions.get('window').height / 2 - CAM_PREVIEW_HEIGHT / 2,
+  },
+  containerLandscape: {
+    position: 'relative',
+    width: CAM_PREVIEW_HEIGHT,
+    height: CAM_PREVIEW_WIDTH,
+    marginLeft: Dimensions.get('window').height / 2 - CAM_PREVIEW_HEIGHT / 2,
+  },
   loadingMsg: {
     position: 'absolute',
     width: '100%',
