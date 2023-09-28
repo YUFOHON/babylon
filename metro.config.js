@@ -13,7 +13,7 @@ module.exports = (async () => {
       }),
     },
     resolver: {
-      assetExts: [...assetExts, 'glb', 'jpg'],
+      assetExts: [...assetExts, 'glb', 'jpg','bin','json'],
     },
   };
 })();
