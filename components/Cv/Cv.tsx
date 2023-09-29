@@ -1,11 +1,11 @@
 import React, {useEffect, useState, useRef} from 'react';
 import {StyleSheet, Text, View, Dimensions, Platform} from 'react-native';
-import '@tensorflow/tfjs-react-native/dist/platform_react_native';
 import {Camera} from 'expo-camera';
 
 import * as tf from '@tensorflow/tfjs';
 import * as posedetection from '@tensorflow-models/pose-detection';
-// import * as ScreenOrientation from 'expo-screen-orientation';
+
+import '@tensorflow/tfjs-react-native/dist/platform_react_native';
 import {
   bundleResourceIO,
   cameraWithTensors,
@@ -14,7 +14,8 @@ import Svg, {Circle} from 'react-native-svg';
 import {ExpoWebGLRenderingContext} from 'expo-gl';
 import {CameraType} from 'expo-camera/build/Camera.types';
 import useOrientation from './useOrientation';
-
+import '@tensorflow/tfjs-backend-webgl';
+const BACKEND_TO_USE = 'rn-webgl';
 const TensorCamera = cameraWithTensors(Camera);
 // Whether to auto-render TensorCamera preview.
 const AUTO_RENDER = false;
@@ -41,9 +42,8 @@ export default function Cv() {
   );
   const [fps, setFps] = useState(0);
   const orientation = useOrientation();
-  console.log('🚀 ~ file: Cv.tsx:44 ~ Cv ~ orientation:', orientation);
 
-  const LOAD_MODEL_FROM_BUNDLE = true;
+  const LOAD_MODEL_FROM_BUNDLE = false;
 
   const rafId = useRef<number | null>(null);
 
@@ -69,10 +69,13 @@ export default function Cv() {
       rafId.current = null;
 
       // Camera permission.
-      await Camera.requestCameraPermissionsAsync();
 
+      await Camera.requestCameraPermissionsAsync();
+      console.log('Camera permission requested');
+      console.log(`Using tfjs backend: ${tf.getBackend()}`);
       // Wait for tfjs to initialize the backend.
       await tf.ready();
+   
       const movenetModelConfig: posedetection.MoveNetModelConfig = {
         modelType: posedetection.movenet.modelType.SINGLEPOSE_LIGHTNING,
         enableSmoothing: true,
@@ -114,15 +117,20 @@ export default function Cv() {
     gl: ExpoWebGLRenderingContext,
   ) => {
     const loop = async () => {
+      // console.log("🚀 ~ file: Cv.tsx:121 ~ Cv ~ loop ~ gl: start handle")
       // Get the tensor and run pose detection.
       const imageTensor = images.next().value as tf.Tensor3D;
+      // console.log("🚀 ~ file: Cv.tsx:123 ~ loop ~ imageTensor:", imageTensor)
 
       const startTs = Date.now();
+      // console.log("🚀 ~ file: Cv.tsx:127 ~ loop ~ model:", model)
+
       const poses = await model!.estimatePoses(
         imageTensor,
         undefined,
         Date.now(),
       );
+      
       const latency = Date.now() - startTs;
       setFps(Math.floor(1000 / latency));
       setPoses(poses);
@@ -189,8 +197,7 @@ export default function Cv() {
     return (
       <View
         style={styles.cameraTypeSwitcher}
-        onTouchEnd={handleSwitchCameraType}
-      >
+        onTouchEnd={handleSwitchCameraType}>
         <Text>
           Switch to{' '}
           {cameraType === Camera.Constants.Type.front ? 'back' : 'front'} camera
@@ -207,20 +214,13 @@ export default function Cv() {
     }
   };
 
-
-
   const getTextureRotationAngleInDegrees = () => {
     // On Android, the camera texture will rotate behind the scene as the phone
     // changes orientation, so we don't need to rotate it in TensorCamera.
     if (IS_ANDROID) {
       return 0;
     }
-
- 
   };
-
-
-
 
   if (!tfReady) {
     return (
@@ -231,25 +231,26 @@ export default function Cv() {
   } else {
     return (
       <View
-      style={
-        orientation.isPortrait? styles.containerPortrait : styles.containerLandscape
-      }
-      >
-             <TensorCamera
-            ref={cameraRef}
-            style={styles.camera}
-            autorender={AUTO_RENDER}
-            type={cameraType}
-            // tensor related props
-            resizeWidth={getOutputTensorWidth()}
-            resizeHeight={getOutputTensorHeight()}
-            resizeDepth={3}
-            rotation={getTextureRotationAngleInDegrees()}
-            onReady={handleCameraStream}
-          />
-           {renderPose()}
-           {renderFps()}
-          {renderCameraTypeSwitcher()}
+        style={
+          orientation.isPortrait
+            ? styles.containerPortrait
+            : styles.containerLandscape
+        }>
+        <TensorCamera
+          ref={cameraRef}
+          style={styles.camera}
+          autorender={AUTO_RENDER}
+          type={cameraType}
+          // tensor related props
+          resizeWidth={getOutputTensorWidth()}
+          resizeHeight={getOutputTensorHeight()}
+          resizeDepth={3}
+          rotation={getTextureRotationAngleInDegrees()}
+          onReady={handleCameraStream}
+        />
+        {renderPose()}
+        {renderFps()}
+        {renderCameraTypeSwitcher()}
       </View>
     );
   }
